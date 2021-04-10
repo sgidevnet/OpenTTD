@@ -62,9 +62,15 @@ class CrashLogUnix : public CrashLog {
 	{
 		return buffer + seprintf(buffer, last,
 				"Crash reason:\n"
+#ifdef __sgi
+				" Signal:  %d\n"
+#else
 				" Signal:  %s (%d)\n"
+#endif
 				" Message: %s\n\n",
+#ifndef __sgi
 				strsignal(this->signum),
+#endif
 				this->signum,
 				message == nullptr ? "<none>" : message
 		);

@@ -154,7 +154,7 @@ macro(compile_flags)
         message(FATAL_ERROR "No warning flags are set for this compiler yet; please consider creating a Pull Request to add support for this compiler.")
     endif()
 
-    if(NOT WIN32)
+    if(NOT WIN32 AND NOT ${CMAKE_SYSTEM_NAME} MATCHES "IRIX*")
         # rdynamic is used to get useful stack traces from crash reports.
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic")
     endif()

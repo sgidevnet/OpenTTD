@@ -177,7 +177,7 @@ static void NetworkFindBroadcastIPsInternal(NetworkAddressList *broadcast) // !G
 		}
 
 		p += sizeof(struct ifreq);
-#if defined(AF_LINK) && !defined(SUNOS)
+#if defined(AF_LINK) && !defined(SUNOS) && !defined(__sgi)
 		p += req->ifr_addr.sa_len - sizeof(struct sockaddr);
 #endif
 	}

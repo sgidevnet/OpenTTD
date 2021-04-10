@@ -10,6 +10,10 @@
 #ifndef ALLOC_FUNC_HPP
 #define ALLOC_FUNC_HPP
 
+#ifdef __sgi
+#include <alloca.h>
+#endif
+
 /*
  * Functions to exit badly with an error message.
  * It has to be linked so the error messages are not

@@ -2268,8 +2268,26 @@ struct LZMASaveFilter : SaveFilter {
 	 */
 	void WriteLoop(byte *p, size_t len, lzma_action action)
 	{
+#ifdef __sgi
+		/* FIXME: figure out what's causing the 128 kB stack allocation to somehow fail.
+		 * stack size limit is not the culprit apparently, unless that's reset somewhere
+		 * in the code as adjusting it with ulimit -s has no effect. 
+		 *
+		 * with malloc'd buffer instead of stack everything works just fine. I have no
+		 * idea what's causing this.
+		 *
+		 * -esp 20210413
+		 */
+		byte *buf;
+#else
 		byte buf[MEMORY_CHUNK_SIZE]; // output buffer
+#endif
 		size_t n;
+
+#ifdef __sgi
+		buf = MallocT<byte>((size_t) MEMORY_CHUNK_SIZE);
+#endif
+
 		this->lzma.next_in = p;
 		this->lzma.avail_in = len;
 		do {
@@ -2285,6 +2303,9 @@ struct LZMASaveFilter : SaveFilter {
 			if (r == LZMA_STREAM_END) break;
 			if (r != LZMA_OK) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "liblzma returned error code");
 		} while (this->lzma.avail_in || !this->lzma.avail_out);
+#ifdef __sgi
+		free(buf);
+#endif
 	}
 
 	void Write(byte *buf, size_t size) override
